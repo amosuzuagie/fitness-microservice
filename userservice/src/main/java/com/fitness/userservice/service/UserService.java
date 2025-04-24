@@ -5,19 +5,22 @@ import com.fitness.userservice.dto.UserResponse;
 import com.fitness.userservice.model.User;
 import com.fitness.userservice.repository.UserRepository;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
 
     public UserResponse register(@Valid RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail()))
-            throw new RuntimeException("Email already exist.");
 
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exist.");
+        }
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
@@ -44,5 +47,10 @@ public class UserService {
         res.setUpdatedAt(user.getUpdatedAt());
 
         return res;
+    }
+
+    public Boolean existByUser(String userId) {
+        log.info("Calling User Validation API for userID: {}", userId);
+        return userRepository.existsById(userId);
     }
 }
